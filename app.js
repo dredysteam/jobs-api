@@ -1,44 +1,39 @@
-require("dotenv").config();
-require("express-async-errors");
-const express = require("express");
+const express = require('express');
+
+// MIDDLEWARES
+const logger = require('./middleware/logger');
+
+// Init express
 const app = express();
+
+// Init MIDDLEWARE
+app.use(logger);
+app.use(express.json());
 
 // connectDB
 
-const connectDB = require("./db/connect");
+// const connectDB = require('./db/connect');
 
-//routers
+// ROUTES
+const membersRouter = require('./routes/members');
 
-const authRouter = require("./routes/auth");
-const jobsRouter = require("./routes/jobs");
-
-app.use("/api/v1/auth", authRouter);
-app.use("/api/v1/jobs", jobsRouter);
-
-// error handler
-const notFoundMiddleware = require("./middleware/not-found");
-const errorHandlerMiddleware = require("./middleware/error-handler");
-
-app.use(express.json());
-// extra packages
+app.use('/api/members', membersRouter);
 
 // routes
-app.get("/", (req, res) => {
-  res.send("jobs api working...");
+app.get('/', (req, res) => {
+  res.send('<h1>Light Freight API is Working...</h1>');
 });
 
-app.use(notFoundMiddleware);
-app.use(errorHandlerMiddleware);
+const port = process.env.PORT || 5000;
+app.listen(port, () => console.log(`Server is listening on port ${port}...`));
 
-const port = process.env.PORT || 3000;
+// const start = async () => {
+//   try {
+//     await connectDB(process.env.MONGO_URI);
+//     app.listen(port, () => console.log(`Server is listening on port ${port}...`));
+//   } catch (error) {
+//     console.log(error);
+//   }
+// };
 
-const start = async () => {
-  try {
-    await connectDB(process.env.MONGO_URI);
-    app.listen(port, () => console.log(`Server is listening on port ${port}...`));
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-start();
+// start();
